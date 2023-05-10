@@ -1,6 +1,10 @@
 const path = require('path')
+const webpack = require('webpack')
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin')
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const moduleFederationConfig = require('./moduleFederationConfig');
+
+const mfPLugin = new webpack.container.ModuleFederationPlugin(moduleFederationConfig('chrome', 'chrome.js'))
 
 
 const isProduction = process.env.NODE_ENV === 'production'
@@ -15,6 +19,7 @@ const config = {
     // new HtmlWebpackPlugin({
     //   template: 'index.html'
     // })
+    mfPLugin
   ],
   module: {
     rules: [
@@ -25,12 +30,6 @@ const config = {
           loader: 'swc-loader',
           options: {
             jsc: {
-              transform: {
-                react: {
-                  development: !isProduction,
-                  refresh: !isProduction,
-                }
-              },
               parser: {
                 syntax: 'typescript'
               }
@@ -50,9 +49,6 @@ const config = {
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js', '...']
   },
-  devServer: {
-    hot: true
-  }
 }
 
 module.exports = () => {
@@ -62,7 +58,7 @@ module.exports = () => {
     config.plugins.push(new WorkboxWebpackPlugin.GenerateSW())
   } else {
     config.mode = 'development'
-    config.plugins.push(new ReactRefreshWebpackPlugin())
+    // config.plugins.push(new ReactRefreshWebpackPlugin())
   }
   return config
 }

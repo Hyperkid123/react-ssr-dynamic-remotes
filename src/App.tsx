@@ -1,4 +1,5 @@
 import React, { Suspense, lazy } from 'react'
+import RemoteComponent from './RemoteComponent';
 const LazyComponent = lazy(() => import('./LazyComponent'))
 
 const App = () => {
@@ -15,6 +16,7 @@ const App = () => {
           <Suspense fallback="Loading LazyComponent...">
             <LazyComponent />
           </Suspense>
+          <RemoteComponent />
         </div>
       </body>
     </html>

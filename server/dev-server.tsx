@@ -1,4 +1,5 @@
-import webpack, { HotModuleReplacementPlugin } from 'webpack';
+import webpack, { HotModuleReplacementPlugin, web } from 'webpack';
+import path from 'path';
 // @ts-ignore
 import webpackConfig from '../../webpack.config.js'
 import webpackDevMiddleware from 'webpack-dev-middleware';
@@ -6,7 +7,7 @@ import webpackDevMiddleware from 'webpack-dev-middleware';
 import app from './server'
 
 const devServerConfig = webpackConfig()
-devServerConfig.plugins.push(new HotModuleReplacementPlugin())
+// devServerConfig.plugins.push(new HotModuleReplacementPlugin())
 const compiler = webpack(devServerConfig)
 
 
