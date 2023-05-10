@@ -7,7 +7,6 @@ import ReactDOMServer from 'react-dom/server'
 import App from '../src/App';
 
 const app = express();
-const port = 8080;
 
 app.use(morgan('combined'))
 
@@ -49,6 +48,4 @@ app.get('/', (_req: Request, res: Response) => {
 })
 
 
-app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
-});
+export default app
