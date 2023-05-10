@@ -8,8 +8,9 @@
     "allowJs": false,
     "strict": true,
     "jsx": "react",
-    "outDir": "buildServer",
-    "moduleResolution": "nodenext"
+    "outDir": "build",
+    "moduleResolution": "node",
+    "skipLibCheck": true
   },
-  "include": ["server/**/*.ts"]
+  "include": ["server/**/*.ts", "server/**/*.tsx", "src/**/*.ts", "src/**/*.tsx"]
 }

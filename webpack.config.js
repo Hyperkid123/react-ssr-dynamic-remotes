@@ -7,13 +7,13 @@ const isProduction = process.env.NODE_ENV === 'production'
 const config = {
   entry: './src/index.tsx',
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    publicPath: '/dist'
+    path: path.resolve(__dirname, 'build/client'),
+    publicPath: '/dist/'
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: 'index.html'
-    })
+    // new HtmlWebpackPlugin({
+    //   template: 'index.html'
+    // })
   ],
   module: {
     rules: [
