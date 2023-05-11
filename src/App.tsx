@@ -1,5 +1,6 @@
 import React, { Suspense, lazy } from 'react'
 import RemoteComponent from './RemoteComponent';
+
 const LazyComponent = lazy(() => import('./LazyComponent'))
 
 const App = () => {
@@ -13,9 +14,11 @@ const App = () => {
       <body>
         <div>
           There will be dragons
+          {/* Standard react lazy component */}
           <Suspense fallback="Loading LazyComponent...">
             <LazyComponent />
           </Suspense>
+          {/* Remote react component */}
           <RemoteComponent />
         </div>
       </body>

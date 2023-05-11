@@ -1,54 +1,25 @@
-/// <reference types="webpack/module" />
-import React, { Suspense, lazy, useEffect, useState } from 'react'
-
-const SHARED_SCOPE_NAME = 'default';
-const initSharedScope = async () => __webpack_init_sharing__(SHARED_SCOPE_NAME);
-const getSharedScope = () => {
-  console.log({ __webpack_share_scopes__ })
-  if (!Object.keys(__webpack_share_scopes__).includes(SHARED_SCOPE_NAME)) {
-    throw new Error('Attempt to access share scope object before its initialization');
-  }
-
-  return __webpack_share_scopes__[SHARED_SCOPE_NAME];
-};
-const injectScriptElement = (url: string, id: string, getDocument = () => document) =>
-  new Promise<void>((resolve, reject) => {
-    const script = getDocument().createElement('script');
-
-    script.async = true;
-    script.src = url;
-    script.id = id;
-
-    script.onload = () => {
-      resolve();
-    };
-
-    script.onerror = (event) => {
-      reject(event);
-    };
-
-    getDocument().head.appendChild(script);
-  });
-
+import React, { Suspense, lazy, useMemo } from 'react'
+import { injectScript } from '@module-federation/utilities'
 
 const RemoteComponent = () => {
-  
-  const initComponent = async () => {
-    // await initSharedScope()
-    const sharedScope = getSharedScope()
-    await injectScriptElement('http://localhost:8004/ssr-remote.js', 'ssrRemote')
+    const initComponent = async () => {
+    // for ssr we need two types of build for remote modules. One for client rendering and one for server rendering.
     // @ts-ignore
-    await global['ssrRemote'].init(sharedScope)
-    // @ts-ignore
-    const container = await global['ssrRemote'].get('./RemoteApp')
-    console.log('container', { c: container().default })
-    return container()
+    const URL = global['IS_SERVER'] ? 'http://localhost:8004/ssr-server-remote.js' : 'http://localhost:8004/ssr-remote.js'
+
+    // similar to what scalprum openshift sdk is doing
+    const container = await injectScript({
+      global: 'ssrRemote',
+      url: URL ,
+    })
+    // get the module
+    const factory = await container.get('./RemoteApp')
+    return factory()
+    
   }
 
-  const Cmp = lazy(() => initComponent())
-  // useEffect(() => {
-  //   initComponent()
-  // }, [])
+  // memoize the component as we call the init method in render
+  const Cmp = useMemo(() =>lazy(() => initComponent()), [])
   return (
     <div>
       This will load remote component
