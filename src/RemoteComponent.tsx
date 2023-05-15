@@ -24,7 +24,7 @@ const RemoteComponent = () => {
     <div>
       This will load remote component
       <Suspense fallback="Loading remote component...">
-        <Cmp />
+        <Cmp initialCount={11} />
       </Suspense>
     </div>
   )

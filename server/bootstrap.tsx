@@ -7,6 +7,16 @@ import fs from 'fs'
 
 import App from '../src/App';
 
+const noop = (...args: unknown[]) => {
+  return args
+}
+
+// this import is necessary to include the react-dom package within the shared scope!! 
+import * as ReactDOM from 'react-dom'
+// it has to be used to not tree shake it
+noop(ReactDOM)
+
+
 const app = express();
 
 app.use(morgan('combined'))
