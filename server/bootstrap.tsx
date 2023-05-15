@@ -9,7 +9,6 @@ import fs from "fs";
 import cookieParser from 'cookie-parser'
 import auth, { decodeToken, getToken, isTokenValid } from "../src/shared/auth";
 import session from 'express-session'
-import App from "../src/App";
 
 export interface SessionRequest extends Omit<Request, 'session'> {
   session: Record<string, any>
@@ -116,13 +115,16 @@ app.get("*", async (req: SessionRequest, res: Response) => {
     return res.redirect(authResult)
   }
 
+  // initialize axios instance
+  initialize(req.session.token)
   let didError = false;
   const waitForAll = false;
   res.socket?.on("error", (error) => console.log("Fatal", error));
 
+  // to ensure axios was initialized before the app starting using it
+  const {default: App} = await import("../src/App");
 
-  // initialize axios instance
-  initialize(req.session.token)
+
   const stream = ReactDOMServer.renderToPipeableStream(
     <StaticRouter location={req.url}>
       <App />
@@ -141,7 +143,7 @@ app.get("*", async (req: SessionRequest, res: Response) => {
       onAllReady() {
         console.log("On all ready");
         if (waitForAll) {
-          res.cookie('poc_auth_code', req.session.code)
+          res.cookie('poc_auth_code', req.session.token)
           res.statusCode = didError ? 500 : 200;
           res.setHeader("content-type", "text/html");
           stream.pipe(res);

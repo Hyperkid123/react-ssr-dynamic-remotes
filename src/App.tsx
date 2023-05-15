@@ -31,7 +31,9 @@ const App = ({ token }: { token?: string }) => {
               <Route path='/foo' element={<div>A route for /foo</div>}/>
             </Routes>
           </div>
-          <FedModulesList />
+          <Suspense fallback="Loading fed modules list....">
+            <FedModulesList />
+          </Suspense>
         </body>
       </html>
     </AuthProvider>

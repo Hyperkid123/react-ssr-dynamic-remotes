@@ -1,22 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import { getFedModules } from '../shared/getFedModules'
+import React from 'react'
+import { suspenseGet } from '../shared/axiosInstance'
 
+// Use suspense for data fetching
+const resource = suspenseGet('/api/chrome-service/v1/static/beta/stage/modules/fed-modules.json')
 const FedModulesList = () => {
-  const [data, setData] = useState<Record<string, any> | undefined>(undefined)
-  useEffect(() => {
-    getFedModules().then(fedModules => {
-      setData(fedModules)
-    })
-  }, [])
-  
-  if(!data) {
-    return (
-      <div>
-        Loading
-      </div>
-    )
-  }
-
+  const data = resource()
   return (
     <div>
       <pre>
