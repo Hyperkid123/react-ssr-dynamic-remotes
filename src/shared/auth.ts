@@ -144,3 +144,47 @@ export function decodeToken(str: string): DecodedToken {
 
   return res;
 }
+
+export function isTokenValid(token?: string) {
+  try {
+    if (!token) {
+      return false;
+    }
+
+    const parsed = decodeToken(token);
+    if (!parsed.exp) {
+      return false;
+    }
+
+    // Date.now() has extra precision...
+    // it includes milis
+    // we need to trim it down to valid seconds from epoch
+    // because we compare to KC's exp which is seconds from epoch
+    const now = Date.now().toString().substr(0, 10);
+    const exp = parsed.exp - parseInt(now);
+
+    console.log(`Token expires in ${exp}`);
+
+    // We want to invalidate tokens if they are getting close
+    // to the expiry time
+    // So that we can be someone safe from time skew
+    // issues on our APIs
+    // i.e. the client could have a slight time skew
+    // and the API is true (because NTP) and we could send down
+    // a JWT that is actually exipred
+    if (exp > 90) {
+      return true;
+    } else {
+      if (exp > 0) {
+        console.log('token is expiring in < 90 seconds');
+      } else {
+        console.log('token is expired');
+      }
+
+      return false;
+    }
+  } catch (e: unknown) {
+    console.error(e);
+    return false;
+  }
+}

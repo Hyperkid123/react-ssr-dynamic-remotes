@@ -7,7 +7,7 @@ import { StaticRouter } from "react-router-dom/server";
 import https from "https";
 import fs from "fs";
 import cookieParser from 'cookie-parser'
-import auth, { decodeToken, getToken } from "../src/shared/auth";
+import auth, { decodeToken, getToken, isTokenValid } from "../src/shared/auth";
 import session from 'express-session'
 import App from "../src/App";
 
@@ -59,9 +59,6 @@ https
   });
 
 const authResult = auth();
-// just a dummy before we have full auth handler
-let loggedIn = false
-
 export default app;
 
 // Section for dev server only
@@ -105,22 +102,18 @@ app.use(devServerProxy);
 
 app.use("/dist", express.static(clientDir));
 app.get("*", async (req: SessionRequest, res: Response) => {
-  if(!loggedIn) {
-    req.session.token = undefined
-    loggedIn = true
-    return res.redirect(authResult)
-  }
-
   const code = req.query.code
   if(code) {
+    req.session.code = code
     const token = await getToken(req.session.code || code)
-    req.session.code = token
-    console.log({ token })
-    if(token) {
-      console.log(decodeToken(token))
-    }
+    req.session.token = token
     // FIXME: Proper redirect URL
     return res.redirect('/')
+  }
+
+  if(!isTokenValid(req.session.token)) {
+    req.session.token = undefined
+    return res.redirect(authResult)
   }
 
   let didError = false;
@@ -129,7 +122,7 @@ app.get("*", async (req: SessionRequest, res: Response) => {
 
 
   // initialize axios instance
-  initialize(req.session.code)
+  initialize(req.session.token)
   const stream = ReactDOMServer.renderToPipeableStream(
     <StaticRouter location={req.url}>
       <App />
@@ -138,7 +131,7 @@ app.get("*", async (req: SessionRequest, res: Response) => {
       bootstrapScripts: ["/dist/main.js"],
       onShellReady: () => {
         if (!waitForAll) {
-          res.cookie('poc_auth_code', req.session.code)
+          res.cookie('poc_auth_code', req.session.token)
           res.statusCode = didError ? 500 : 200;
           res.setHeader("Content-type", "text/html");
           stream.pipe(res);
