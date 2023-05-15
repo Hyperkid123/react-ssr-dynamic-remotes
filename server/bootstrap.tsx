@@ -7,7 +7,7 @@ import { StaticRouter } from "react-router-dom/server";
 import https from "https";
 import fs from "fs";
 import cookieParser from 'cookie-parser'
-import auth, { getToken } from "./auth";
+import auth, { decodeToken, getToken } from "../src/shared/auth";
 import session from 'express-session'
 import App from "../src/App";
 
@@ -67,6 +67,7 @@ export default app;
 // Section for dev server only
 import { HttpsProxyAgent } from "https-proxy-agent";
 import { createProxyMiddleware } from "http-proxy-middleware";
+import { initialize } from "../src/shared/axiosInstance";
 
 const corpProxy = "http://squid.corp.redhat.com:3128";
 const target = "https://console.stage.redhat.com";
@@ -105,19 +106,20 @@ app.use(devServerProxy);
 app.use("/dist", express.static(clientDir));
 app.get("*", async (req: SessionRequest, res: Response) => {
   if(!loggedIn) {
-    req.session.token ='foo'
+    req.session.token = undefined
     loggedIn = true
     return res.redirect(authResult)
   }
 
-  console.log(req.session)
-
-  const host = req.hostname
   const code = req.query.code
   if(code) {
-    req.session.code = code
-    const token = await getToken(code.toString())
-    console.log({ token, burl: req.baseUrl, url: req.url })
+    const token = await getToken(req.session.code || code)
+    req.session.code = token
+    console.log({ token })
+    if(token) {
+      console.log(decodeToken(token))
+    }
+    // FIXME: Proper redirect URL
     return res.redirect('/')
   }
 
@@ -125,6 +127,9 @@ app.get("*", async (req: SessionRequest, res: Response) => {
   const waitForAll = false;
   res.socket?.on("error", (error) => console.log("Fatal", error));
 
+
+  // initialize axios instance
+  initialize(req.session.code)
   const stream = ReactDOMServer.renderToPipeableStream(
     <StaticRouter location={req.url}>
       <App />
@@ -133,6 +138,7 @@ app.get("*", async (req: SessionRequest, res: Response) => {
       bootstrapScripts: ["/dist/main.js"],
       onShellReady: () => {
         if (!waitForAll) {
+          res.cookie('poc_auth_code', req.session.code)
           res.statusCode = didError ? 500 : 200;
           res.setHeader("Content-type", "text/html");
           stream.pipe(res);
@@ -142,6 +148,7 @@ app.get("*", async (req: SessionRequest, res: Response) => {
       onAllReady() {
         console.log("On all ready");
         if (waitForAll) {
+          res.cookie('poc_auth_code', req.session.code)
           res.statusCode = didError ? 500 : 200;
           res.setHeader("content-type", "text/html");
           stream.pipe(res);
