@@ -1,5 +1,6 @@
 import React, { Suspense, lazy } from 'react'
 import RemoteComponent from './RemoteComponent';
+import { Link, Route, Routes } from 'react-router-dom';
 
 const LazyComponent = lazy(() => import('./LazyComponent'))
 
@@ -20,6 +21,12 @@ const App = () => {
           </Suspense>
           {/* Remote react component */}
           <RemoteComponent />
+          <div>
+            <Link to="/foo">Link for foo</Link>
+          </div>
+          <Routes>
+            <Route path='/foo' element={<div>A route for /foo</div>}/>
+          </Routes>
         </div>
       </body>
     </html>

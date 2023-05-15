@@ -66,7 +66,8 @@ module.exports = (isServer) => {
     },     
     shared: [
       { react: { singleton: true, eager: true, requiredVersion: "*" }},
-      {'react-dom': { singleton: true, eager: true, requiredVersion: "*" }}
+      {'react-dom': { singleton: true, eager: true, requiredVersion: "*" }},
+      {'react-router-dom': { singleton: true, eager: true, requiredVersion: "*" }}
     ]
     // shared: [
     //   {

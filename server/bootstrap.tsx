@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 import { join } from 'path'
 import morgan from 'morgan'
 import ReactDOMServer from 'react-dom/server'
-import fs from 'fs'
+import { StaticRouter } from 'react-router-dom/server'
 
 import App from '../src/App';
 
@@ -11,7 +11,7 @@ const noop = (...args: unknown[]) => {
   return args
 }
 
-// this import is necessary to include the react-dom package within the shared scope!! 
+// this import is necessary to include the client based packages within the shared scope!! 
 import * as ReactDOM from 'react-dom'
 // it has to be used to not tree shake it
 noop(ReactDOM)
@@ -20,7 +20,6 @@ noop(ReactDOM)
 const app = express();
 
 app.use(morgan('combined'))
-
 
 // @ts-ignore
 global['IS_SERVER'] = true
@@ -35,22 +34,27 @@ const rootDir = process.cwd()
 const clientDir = join(rootDir, 'build', 'client')
 
 app.use('/dist', express.static(clientDir))
-app.get('/', (_req: Request, res: Response) => {
+app.get('*', (req: Request, res: Response) => {
   let didError = false
   const waitForAll = false
   res.socket?.on('error', (error) => console.log('Fatal', error));
 
   const stream = ReactDOMServer.renderToPipeableStream(
-    <App />,
+    <StaticRouter location={req.url}>
+      <App />
+    </StaticRouter>,
     {
       bootstrapScripts: ['/dist/main.js'],
       onShellReady: () => {
-        res.statusCode = didError ? 500 : 200
-        res.setHeader('Content-type', 'text/html');
-        stream.pipe(res);
+        if(!waitForAll) {
+          res.statusCode = didError ? 500 : 200
+          res.setHeader('Content-type', 'text/html');
+          stream.pipe(res);
+        }
       },
       // handy for SEO
       onAllReady() {
+        console.log("On all ready")
         if (waitForAll) {
           res.statusCode = didError ? 500 : 200;
           res.setHeader('content-type', 'text/html');
