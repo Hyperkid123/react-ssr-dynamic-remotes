@@ -1,11 +1,6 @@
-const path = require('path')
-const webpack = require('webpack')
-const WorkboxWebpackPlugin = require('workbox-webpack-plugin')
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const path = require('path');
+const webpack = require('webpack');
 const { UniversalFederationPlugin } = require('@module-federation/node');
-
-
-const isProduction = process.env.NODE_ENV === 'production'
 
 const config = {
   entry: './src/index.tsx',
@@ -13,14 +8,8 @@ const config = {
   output: {
     path: path.resolve(__dirname, 'build/client'),
     publicPath: '/dist/',
-    // library: {type: 'commonjs-module',}
   },
-  plugins: [
-    // new HtmlWebpackPlugin({
-    //   template: 'index.html'
-    // })
-    // mfPLugin
-  ],
+  plugins: [],
   module: {
     rules: [
       {
@@ -31,51 +20,55 @@ const config = {
           options: {
             jsc: {
               parser: {
-                syntax: 'typescript'
-              }
-            }
-          }
-        }
+                syntax: 'typescript',
+              },
+            },
+          },
+        },
       },
       {
         test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
-        type: 'asset'
-      }
+        type: 'asset',
+      },
 
       // Add your rules for custom modules here
       // Learn more about loaders from https://webpack.js.org/loaders/
-    ]
+    ],
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js', '...'],
     fallback: {
-      "os": require.resolve("os-browserify/browser"),
-      "path": require.resolve("path-browserify"),
-      "crypto": require.resolve("crypto-browserify"),
-      "stream": require.resolve("stream-browserify")
-    }
+      os: require.resolve('os-browserify/browser'),
+      path: require.resolve('path-browserify'),
+      crypto: require.resolve('crypto-browserify'),
+      stream: require.resolve('stream-browserify'),
+    },
   },
-}
+};
 
 module.exports = (isServer) => {
   // if(typeof isServer !== 'boolean') {
-    // }
-  config.plugins.push(new UniversalFederationPlugin({
-    isServer: isServer === true,
-    remotes: {
-      // fake is required for node to be setup to accept remote chunks in node env
-    'fake': 'promise new Promise((resolve) => {resolve({get:()=>Promise.resolve(()=>{}),init:()=>{}})})',
-    },     
-    shared: [
-      { react: { singleton: true, eager: true, requiredVersion: "*" }},
-      {'react-dom': { singleton: true, eager: true, requiredVersion: "*" }},
-      {'react-router-dom': { singleton: true, eager: true, requiredVersion: "*" }}
-    ]
-  }))
-  config.plugins.push(new webpack.DefinePlugin({
-    'process.env.IS_SERVER': isServer === true
-  }))
-  config.target = isServer === true ? false : 'web'
-  
-  return config
-}
+  // }
+  config.plugins.push(
+    new UniversalFederationPlugin({
+      isServer: isServer === true,
+      remotes: {
+        // fake is required for node to be setup to accept remote chunks in node env
+        fake: 'promise new Promise((resolve) => {resolve({get:()=>Promise.resolve(()=>{}),init:()=>{}})})',
+      },
+      shared: [
+        { react: { singleton: true, eager: true, requiredVersion: '*' } },
+        { 'react-dom': { singleton: true, eager: true, requiredVersion: '*' } },
+        { 'react-router-dom': { singleton: true, eager: true, requiredVersion: '*' } },
+      ],
+    })
+  );
+  config.plugins.push(
+    new webpack.DefinePlugin({
+      'process.env.IS_SERVER': isServer === true,
+    })
+  );
+  config.target = isServer === true ? false : 'web';
+
+  return config;
+};

@@ -10,7 +10,8 @@
     "jsx": "react",
     "outDir": "build",
     "moduleResolution": "node",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "typeRoots": ["./types/"]
   },
-  "include": ["server/**/*.ts", "server/**/*.tsx", "src/**/*.ts", "src/**/*.tsx"]
+  "include": ["types/**/*.d.ts", "server/**/*.ts", "server/**/*.tsx", "src/**/*.ts", "src/**/*.tsx"]
 }

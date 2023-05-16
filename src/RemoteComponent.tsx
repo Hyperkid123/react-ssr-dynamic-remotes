@@ -1,25 +1,23 @@
-import React, { Suspense, lazy, useMemo } from 'react'
-import { injectScript } from '@module-federation/utilities'
+import React, { Suspense, lazy, useMemo } from 'react';
+import { injectScript } from '@module-federation/utilities';
 
 const RemoteComponent = () => {
-    const initComponent = async () => {
+  const initComponent = async () => {
     // for ssr we need two types of build for remote modules. One for client rendering and one for server rendering.
-    // @ts-ignore
-    const URL = process.env.IS_SERVER ? 'http://localhost:8004/ssr-server-remote.js' : 'http://localhost:8004/ssr-remote.js'
+    const URL = process.env.IS_SERVER ? 'http://localhost:8004/ssr-server-remote.js' : 'http://localhost:8004/ssr-remote.js';
 
     // similar to what scalprum openshift sdk is doing
     const container = await injectScript({
       global: 'ssrRemote',
-      url: URL ,
-    })
+      url: URL,
+    });
     // get the module
-    const factory = await container.get('./RemoteApp')
-    return factory()
-    
-  }
+    const factory = await container.get<{ default: React.ComponentType<{ initialCount?: number }> }>('./RemoteApp');
+    return factory();
+  };
 
   // memoize the component as we call the init method in render
-  const Cmp = useMemo(() =>lazy(() => initComponent()), [])
+  const Cmp = useMemo(() => lazy(async () => await initComponent()), []);
   return (
     <div>
       This will load remote component
@@ -27,7 +25,7 @@ const RemoteComponent = () => {
         <Cmp initialCount={11} />
       </Suspense>
     </div>
-  )
-}
+  );
+};
 
-export default RemoteComponent
+export default RemoteComponent;

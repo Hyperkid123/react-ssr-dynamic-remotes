@@ -20,6 +20,7 @@
     "eslint-config-standard-with-typescript": "^34.0.1",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^15.7.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-react": "^7.32.2",
     "fs-extra": "^11.1.1",
@@ -31,6 +32,7 @@
     "nodemon": "^2.0.22",
     "npm": "^9.6.6",
     "prettier": "^2.8.4",
+    "prettier-eslint": "^15.0.1",
     "puppeteer": "^20.1.2",
     "puppeteer-core": "^20.1.2",
     "react-refresh": "^0.14.0",
@@ -52,7 +54,7 @@
     "webpack": "webpack",
     "build:dev": "concurrently \"npm run webpack\" \"npm run webpack -- -c webpack.server.config.js\"",
     "dev:server": "nodemon ./build/server/main.js",
-    "lint": "eslint src/* --ext .js,.ts,.tsx",
+    "lint": "eslint . --ext .js,.ts,.tsx",
     "watch:dev": "concurrently \"npm run webpack -- --watch\" \"npm run webpack -- -c webpack.server.config.js --watch\""
   },
   "dependencies": {
@@ -60,6 +62,7 @@
     "cookie-parser": "^1.4.6",
     "crypto-browserify": "^3.12.0",
     "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
     "express-session": "^1.17.3",
     "js-cookie": "^3.0.5",
     "morgan": "^1.10.0",

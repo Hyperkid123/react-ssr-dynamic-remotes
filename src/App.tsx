@@ -1,10 +1,10 @@
-import React, { Suspense, lazy } from 'react'
+import React, { Suspense, lazy } from 'react';
 import RemoteComponent from './RemoteComponent';
 import { Link, Route, Routes } from 'react-router-dom';
 import AuthProvider from './shared/AuthProvider';
 import FedModulesList from './components/FedModulesList';
 
-const LazyComponent = lazy(() => import('./LazyComponent'))
+const LazyComponent = lazy(() => import('./LazyComponent'));
 
 const App = ({ token }: { token?: string }) => {
   return (
@@ -28,7 +28,7 @@ const App = ({ token }: { token?: string }) => {
               <Link to="/foo">Link for foo</Link>
             </div>
             <Routes>
-              <Route path='/foo' element={<div>A route for /foo</div>}/>
+              <Route path="/foo" element={<div>A route for /foo</div>} />
             </Routes>
           </div>
           <Suspense fallback="Loading fed modules list....">
@@ -37,7 +37,7 @@ const App = ({ token }: { token?: string }) => {
         </body>
       </html>
     </AuthProvider>
-  )
-}
+  );
+};
 
 export default App;
