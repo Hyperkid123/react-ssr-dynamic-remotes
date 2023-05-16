@@ -5,7 +5,7 @@ const RemoteComponent = () => {
     const initComponent = async () => {
     // for ssr we need two types of build for remote modules. One for client rendering and one for server rendering.
     // @ts-ignore
-    const URL = global['IS_SERVER'] ? 'http://localhost:8004/ssr-server-remote.js' : 'http://localhost:8004/ssr-remote.js'
+    const URL = process.env.IS_SERVER ? 'http://localhost:8004/ssr-server-remote.js' : 'http://localhost:8004/ssr-remote.js'
 
     // similar to what scalprum openshift sdk is doing
     const container = await injectScript({

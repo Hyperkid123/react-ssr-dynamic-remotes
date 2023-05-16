@@ -71,19 +71,10 @@ module.exports = (isServer) => {
       {'react-dom': { singleton: true, eager: true, requiredVersion: "*" }},
       {'react-router-dom': { singleton: true, eager: true, requiredVersion: "*" }}
     ]
-    // shared: [
-    //   {
-    //     react: { singleton: true, eager: true, requiredVersion: "*" },
-    //     'react-dom': { singleton: true, eager: true, requiredVersion: "*" }
-    //   }
-    // ],
   }))
-  // config.plugins.push(new webpack.container.ModuleFederationPlugin({
-  //   shared: [
-  //     { react: { singleton: true, eager: true, requiredVersion: "*" }},
-  //     {'react-dom': { singleton: true, eager: true, requiredVersion: "*" }}
-  //   ]
-  // }))
+  config.plugins.push(new webpack.DefinePlugin({
+    'process.env.IS_SERVER': isServer === true
+  }))
   config.target = isServer === true ? false : 'web'
   
   return config

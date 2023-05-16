@@ -33,8 +33,6 @@ app.use(session({
   saveUninitialized: false,
 }))
 
-// @ts-ignore
-global["IS_SERVER"] = true;
 
 // This import is crucial to enable the dynamic remotes on server side!!
 // @ts-ignore

@@ -17,8 +17,7 @@ export const getInstance = (): AxiosInstance => {
 
 export const initialize = (token: string) => {
   instance = axios.create({
-    // @ts-ignore
-    baseURL: global['IS_SERVER'] ? 'https://console.stage.redhat.com' : '/',
+    baseURL: process.env.IS_SERVER ? 'https://console.stage.redhat.com' : '/',
     headers: {
       Authorization: `Bearer ${token}`
     },
