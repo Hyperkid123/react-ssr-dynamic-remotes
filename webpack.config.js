@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const { UniversalFederationPlugin } = require('@module-federation/node');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const config = {
   entry: './src/index.tsx',
@@ -9,7 +10,7 @@ const config = {
     path: path.resolve(__dirname, 'build/client'),
     publicPath: '/dist/',
   },
-  plugins: [],
+  plugins: [new MiniCssExtractPlugin()],
   module: {
     rules: [
       {
@@ -25,6 +26,19 @@ const config = {
             },
           },
         },
+      },
+      {
+        test: /\.s?[ac]ss$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          // {
+          //   loader: 'resolve-url-loader',
+          //   // options: {
+          //   //   join: createJoinFunction('myJoinFn', createJoinImplementation(myGenerator)),
+          //   // },
+          // },
+        ],
       },
       {
         test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
