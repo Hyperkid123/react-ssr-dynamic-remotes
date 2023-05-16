@@ -15,9 +15,12 @@ const Header = () => {
       </MastheadMain>
       <MastheadContent>
         <Flex>
-          <Title headingLevel="h1">SRR | Module federation POC</Title>
-          <Link to="/remote">SSR rendered federated module</Link>
+          <Title data-ouia-component-id="a-title" headingLevel="h1">
+            SRR | Module federation POC
+          </Title>
           <Link to="/">Current HCC remote module</Link>
+          <Link to="/remote">SSR rendered federated module</Link>
+          <Link to="/suspense-fetch">Data fetched using the Suspense model</Link>
         </Flex>
       </MastheadContent>
     </Masthead>

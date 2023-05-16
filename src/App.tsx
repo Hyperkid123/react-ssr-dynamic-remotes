@@ -1,33 +1,8 @@
 import '@patternfly/react-core/dist/styles/base.css';
 
-import React, { Suspense, lazy } from 'react';
-import RemoteComponent from './RemoteComponent';
-import { Link, Route, Routes } from 'react-router-dom';
+import React from 'react';
 import AuthProvider from './shared/AuthProvider';
-import FedModulesList from './components/FedModulesList';
 import Root from './Routes/Root';
-
-const LazyComponent = lazy(() => import('./LazyComponent'));
-
-const Dump = () => {
-  return (
-    <div>
-      There will be dragons
-      {/* Standard react lazy component */}
-      <Suspense fallback="Loading LazyComponent...">
-        <LazyComponent />
-      </Suspense>
-      {/* Remote react component */}
-      <RemoteComponent />
-      <div>
-        <Link to="/foo">Link for foo</Link>
-      </div>
-      <Suspense fallback="Loading fed modules list....">
-        <FedModulesList />
-      </Suspense>
-    </div>
-  );
-};
 
 const App = ({ token }: { token?: string }) => {
   return (
