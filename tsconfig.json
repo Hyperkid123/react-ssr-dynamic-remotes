@@ -11,7 +11,7 @@
     "outDir": "build",
     "moduleResolution": "node",
     "skipLibCheck": true,
-    "typeRoots": ["./types/"]
+    // "typeRoots": ["@types"]
   },
-  "include": ["types/**/*.d.ts", "server/**/*.ts", "server/**/*.tsx", "src/**/*.ts", "src/**/*.tsx"]
+  "include": ["@types/types.d.ts", "server/**/*.ts", "server/**/*.tsx", "src/**/*.ts", "src/**/*.tsx"]
 }

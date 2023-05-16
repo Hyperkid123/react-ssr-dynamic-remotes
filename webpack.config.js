@@ -74,6 +74,7 @@ module.exports = (isServer) => {
         { react: { singleton: true, eager: true, requiredVersion: '*' } },
         { 'react-dom': { singleton: true, eager: true, requiredVersion: '*' } },
         { 'react-router-dom': { singleton: true, eager: true, requiredVersion: '*' } },
+        { '@scalprum/react-core': { singleton: true, eager: true, requiredVersion: '*' } },
       ],
     })
   );

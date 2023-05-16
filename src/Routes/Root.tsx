@@ -1,12 +1,16 @@
 import React from 'react';
 import BaseLayout from '../layouts/BaseLayout';
-import { Button } from '@patternfly/react-core';
+import { Route, Routes } from 'react-router-dom';
+import RemoteComponent from '../RemoteComponent';
+import HCCRemoteComponent from '../components/HccRemoteComponent';
 
 const Root = () => {
   return (
     <BaseLayout>
-      <div>This will be root</div>
-      <Button>A button</Button>
+      <Routes>
+        <Route path="/remote" element={<RemoteComponent />} />
+        <Route path="/" element={<HCCRemoteComponent />} />
+      </Routes>
     </BaseLayout>
   );
 };

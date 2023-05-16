@@ -13,3 +13,9 @@ declare module 'fake' {
   type fake = string;
   export default fake;
 }
+
+// allow .svg imports in TSX? files
+declare module '*.svg' {
+  const content: React.FunctionComponent<React.SVGAttributes<SVGElement>>;
+  export default content;
+}

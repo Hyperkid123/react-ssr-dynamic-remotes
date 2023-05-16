@@ -1,4 +1,4 @@
-import React, { createContext, useMemo } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 import { decodeToken } from './auth';
 
 type AuthContextValue = {
@@ -15,6 +15,11 @@ const AuthContext = createContext<AuthContextValue>({
 const AuthProvider: React.FC<React.PropsWithChildren<{ token?: string }>> = ({ token, children }) => {
   const auth = useMemo(() => (token ? { ...decodeToken(token), token, ready: true } : { ready: false }), [token]);
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
+};
+
+export const useAuth = () => {
+  const auth = useContext(AuthContext);
+  return auth;
 };
 
 export default AuthProvider;

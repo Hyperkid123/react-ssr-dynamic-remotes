@@ -90,6 +90,7 @@ const devServerProxy = createProxyMiddleware(pathFilter, {
   secure: false,
   autoRewrite: true,
   agent: proxyAgent,
+  logLevel: 'debug',
   headers: {
     Host: target.replace('https://', ''),
     Origin: target,
