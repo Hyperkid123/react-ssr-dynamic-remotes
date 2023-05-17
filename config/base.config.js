@@ -13,7 +13,12 @@ const getSharedDeps = () => [
 ];
 
 const getConfig = (isServer = false) => ({
-  entry: path.resolve(__dirname, isServer ? '../server/index.ts' : '../src/index.ts'),
+  entry: isServer
+    ? {
+        serverStart: path.resolve(__dirname, '../server/index.ts'),
+        serverAPI: path.resolve(__dirname, '../server/server.ts'),
+      }
+    : path.resolve(__dirname, isServer ? '../server/index.ts' : '../src/index.ts'),
   mode: 'development',
   output: {
     path: path.resolve(__dirname, isServer ? '../build/server' : '../build/client'),

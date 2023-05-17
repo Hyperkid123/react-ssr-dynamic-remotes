@@ -31,7 +31,7 @@ const devServerProxy = createProxyMiddleware(pathFilter, {
   },
 });
 
-export default (express: any, app: any, done: () => void, root: string) => {
+export default (express: any, app: any, root: string) => {
   // This import is crucial to enable the dynamic remotes on server side!!
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
   // @ts-ignore
@@ -52,6 +52,4 @@ export default (express: any, app: any, done: () => void, root: string) => {
   const renderThunk = require('./server-render').default;
   const serverRender = renderThunk();
   app.get('/*', serverRender);
-
-  done();
 };
