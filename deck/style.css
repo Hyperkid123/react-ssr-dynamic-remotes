@@ -1,0 +1,36 @@
+/* CSS */
+.make-it-pop {
+  filter: drop-shadow(0 0 10px purple);
+}
+
+.fragment.blur {
+  filter: blur(5px);
+}
+.fragment.blur.visible {
+  filter: none;
+}
+
+.agenda li{
+  margin-top: 12px;
+}
+
+.overlay {
+  background-color: transparent;
+}
+
+.overshadowed {
+  filter: opacity(25%) ;
+}
+
+.rot-1 {
+  transform: rotate(16deg);
+}
+
+.rot-2 {
+  transform: rotate(-33deg);
+  translate: -79px 130px;
+}
+
+.rot-2 {
+
+}
