@@ -1,14 +1,31 @@
 const path = require('path');
 const webpack = require('webpack');
-const { UniversalFederationPlugin } = require('@module-federation/node');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { UniversalFederationPlugin } = require('@module-federation/node');
+
+const getSharedDeps = () => [
+  {
+    react: { requiredVersion: '*', singleton: true },
+    'react-dom': { requiredVersion: '*', singleton: true },
+    'react-router-dom': { requiredVersion: '*', singleton: true },
+    '@scalprum/react-core': { requiredVersion: '*', singleton: true },
+  },
+];
 
 const getConfig = (isServer = false) => ({
-  entry: path.resolve(__dirname, isServer ? '../server/server.tsx' : '../src/index.tsx'),
+  entry: path.resolve(__dirname, isServer ? '../server/index.ts' : '../src/index.ts'),
   mode: 'development',
   output: {
     path: path.resolve(__dirname, isServer ? '../build/server' : '../build/client'),
+    filename: '[name].js',
     publicPath: '/dist/',
+    ...(isServer
+      ? {
+          libraryTarget: 'commonjs-module',
+        }
+      : {
+          chunkFilename: '[name].js',
+        }),
   },
   target: isServer ? false : 'web',
   plugins: [
@@ -16,7 +33,6 @@ const getConfig = (isServer = false) => ({
     new webpack.DefinePlugin({
       'process.env.IS_SERVER': isServer === true,
     }),
-
     new UniversalFederationPlugin({
       isServer,
       remotes: {
@@ -27,12 +43,7 @@ const getConfig = (isServer = false) => ({
             }
           : {}),
       },
-      shared: [
-        { react: { singleton: true, eager: true, requiredVersion: '*' } },
-        { 'react-dom': { singleton: true, eager: true, requiredVersion: '*' } },
-        { 'react-router-dom': { singleton: true, eager: true, requiredVersion: '*' } },
-        { '@scalprum/react-core': { singleton: true, eager: true, requiredVersion: '*' } },
-      ],
+      shared: getSharedDeps(),
     }),
   ],
   module: {

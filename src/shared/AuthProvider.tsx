@@ -13,7 +13,23 @@ const AuthContext = createContext<AuthContextValue>({
 });
 
 const AuthProvider: React.FC<React.PropsWithChildren<{ token?: string }>> = ({ token, children }) => {
-  const auth = useMemo(() => (token ? { ...decodeToken(token), token, ready: true } : { ready: false }), [token]);
+  const auth = useMemo(() => {
+    if (!token) {
+      return {
+        ready: false,
+      };
+    }
+    try {
+      const res = {
+        ...decodeToken(token),
+        token,
+        ready: true,
+      };
+      return res;
+    } catch (error) {
+      return { ready: false };
+    }
+  }, [token]);
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 };
 
