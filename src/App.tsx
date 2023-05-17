@@ -1,4 +1,6 @@
 import '@patternfly/react-core/dist/styles/base.css';
+import '@patternfly/patternfly/patternfly.min.css';
+import '@patternfly/patternfly/patternfly-addons.css';
 
 import React from 'react';
 import AuthProvider from './shared/AuthProvider';
@@ -12,8 +14,6 @@ const App = ({ token }: { token?: string }) => {
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="stylesheet" href="/dist/main.css" />
-          <link rel="stylesheet" href="/dist/patternfly.min.css" />
-          <link rel="stylesheet" href="/dist/patternfly-addons.css" />
           <title>SSR base</title>
         </head>
         <body>

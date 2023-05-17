@@ -55,10 +55,9 @@
     "ssg": "node support/ssg.mjs",
     "build": "webpack --mode=production --node-env=production",
     "webpack": "webpack",
-    "build:dev": "concurrently \"npm run webpack\" \"npm run webpack -- -c webpack.server.config.js\"",
     "dev:server": "nodemon ./build/server/main.js",
     "lint": "eslint . --ext .js,.ts,.tsx",
-    "watch:dev": "concurrently \"npm run webpack -- --watch\" \"npm run webpack -- -c webpack.server.config.js --watch\""
+    "watch:dev": "webpack -- -c config/webpack.config.js --watch"
   },
   "dependencies": {
     "@module-federation/utilities": "^1.7.0",
