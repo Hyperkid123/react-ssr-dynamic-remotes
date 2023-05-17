@@ -80,17 +80,17 @@ function createLoginUrl(options: LoginOptions) {
   return url.toString();
 }
 
-const auth = () => {
-  return createLoginUrl(options);
+const auth = (redirectUri: string) => {
+  return createLoginUrl({ ...options, redirectUri });
 };
 
-export const getToken = (code: string) => {
+export const getToken = (code: string, redirectURL: string) => {
   const formData = new URLSearchParams();
   formData.append('code', code);
   formData.append('grant_type', 'authorization_code');
   formData.append('client_id', 'cloud-services');
   // FIXME: Dynamic redirect URI
-  formData.append('redirect_uri', 'https://stage.foo.redhat.com:1337/');
+  formData.append('redirect_uri', redirectURL);
   const tokenUrl = kc.endpoints.token(options.url, options.realm);
   return axios
     .post<{

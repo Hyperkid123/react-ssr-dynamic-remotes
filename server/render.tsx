@@ -10,21 +10,21 @@ interface SessionRequest extends Omit<Request, 'session'> {
   session: Record<string, any>;
 }
 
-const authResult = auth();
-
 export default async function render(req: SessionRequest, res: Response, _next: NextFunction) {
   const code = req.query.code;
+  const redirectURL = `${req.protocol}://${req.hostname}:1337${req.path}`;
 
   if (code) {
     req.session.code = code;
-    const token = await getToken(req.session.code || code);
+    const token = await getToken(req.session.code || code, redirectURL);
     req.session.token = token;
-    // FIXME: Proper redirect URL
-    return res.redirect('/suspense-fetch');
+    return res.redirect(req.path);
   }
 
   if (!isTokenValid(req.session.token)) {
     req.session.token = undefined;
+    // FIXME: Do not strip query params
+    const authResult = auth(redirectURL);
     return res.redirect(authResult);
   }
 
