@@ -34,3 +34,55 @@
 .rot-2 {
 
 }
+
+.shapes-grid {
+  display: grid;
+  grid-template: "head head" 2em
+                 "nav content" 8em / 1fr 4fr;
+  gap: 16px;
+}
+
+.shape.fragment {
+  display: block;
+  background-color: transparent;
+}
+
+.shape.fragment {
+  display: flex;
+  border-radius: 8px;
+  border-style: dashed;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+.shape.fragment > span {
+  visibility: hidden;
+}
+
+.shape.fragment.visible > span {
+  visibility: visible;
+}
+
+.shapes-grid .shapes-header {
+  grid-area: head;
+}
+
+.shapes-grid .shapes-nav {
+  grid-area: nav;
+}
+
+.shapes-grid .shapes-content {
+  grid-area: content;
+}
+
+.shapes-grid .shapes-header.visible {
+  background-color: darkcyan;
+}
+
+.shapes-grid .shapes-nav.visible {
+  background-color: darkcyan;
+}
+
+.shapes-grid .shapes-content.visible {
+  background-color: darkcyan;
+}

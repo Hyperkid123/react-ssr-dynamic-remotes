@@ -23,7 +23,7 @@
               Some terminology 💀
             </li>
             <li class="fragment">
-              Can microfrontend leverage SSR? 🤯
+              Can Micro-Frontends leverage SSR? 🤯
             </li>
             <li class="fragment">
               What are the benefits 👍
@@ -116,11 +116,147 @@
           <div style="height: 400px;" class="tenor-gif-embed" data-postid="22796283" data-share-method="host" data-aspect-ratio="1.77778" data-width="100%"><a href="https://tenor.com/view/steam-locomotive-train-wreck-train-wreck-boom-gif-22796283">Steam Locomotive Train GIF</a>from <a href="https://tenor.com/search/steam+locomotive-gifs">Steam Locomotive GIFs</a></div> <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
           <p>The platform UI had to change.</p>
           <br />
-        </section>      
-        <section data-state="make-it-pop">POP</section>
-        <section>Slide 2</section>
-      </div>
+        </section>
+        <section>
+          <p>
+            Chrome 2 to the rescue!
+          </p>
+          <ul>
+            <li>
+              SPA
+            </li>
+            <li>
+              Module federation
+            </li>
+            <li>
+              Micro-Frontends
+            </li>
+          </ul>
+        </section>
+        <section class="r-stack">
+          <h4 class="fade-out">Some terminology 💀</h4>
+          <div class="r-stack">
+            <div class="fragment fade-out current-visible">
+              <p>
+                SPA - single page application 📖
+              </p>
+              <ul>
+                <li>
+                  All document requests use a single HTML template.
+                </li>
+                <li>
+                  Once loaded into browser, JS assets are requests.
+                </li>
+                <li>
+                  Once JS loads, it mounts the APP into the document (root element).
+                </li>
+                <li>
+                  All DOM updates from this point are done in the browser
+                </li>
+                <li>
+                  If the browser disables JS, the app does not work
+                </li>
+              </ul>
+            </div>
+            <div class="fragment fade-out current-visible">
+              <p>
+                SSR - server side rendering 🖨️
+              </p>
+              <ul>
+                <li>
+                  Each document request has uniquely generated HTML template.
+                </li>
+                <li>
+                  Once loaded into browser, JS assets are requests.
+                </li>
+                <li>
+                  🌧️ JS hydrates the static DOM. This makes the page interactive.
+                </li>
+                <li>
+                  After hydration, the client takes over. "SPA" mode
+                </li>
+              </ul>
+            </div>
+            <div class="fragment fade-out current-visible">
+              <p>
+                Micro-Frontends
+              </p>
+              <p>
+                <i>A type of architecture where a web application is divided into different modules or individual functions.</i>
+              </p>
+              <small><a href="https://www.aplyca.com/en/blog/micro-frontends-what-are-they-and-when-to-use-them">https://www.aplyca.com/en/blog/micro-frontends-what-are-they-and-when-to-use-them</a></small>
+            </div>
+            <div class="fragment fade-out current-visible">
+              <p>
+                Module federation
+              </p>
+              <ul>
+                <li>
+                  A technique that allows loading and sharing JS modules at runtime
+                </li>
+                <li>
+                  JS bundles build as remote containers
+                </li>
+                <li>
+                  A remote container has the ability inject itself into the JS runtime
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      <section>
+          <h2 class="fragment semi-fade-out shrink">Can Micro-Frontends architecture leverage SSR? 🤯</h2>
+          <h2 class="fragment current-visible fade-up grow">Yes</h2>
+      </section>
+      <section>
+        <div>
+          <p class="fragment">
+            The main difference is, that simple CDN is not good enough anymore.
+          </p>
+          <p class="fragment">
+            We now need a server. 💾
+          </p>
+        </div>
+      </section>
+      <section>
+        <p>Rendering can look like this</p>
+        <pre style="font-size: 0.51em;" class="jsx">
+          <code data-line-numbers="1|4-5|8,11" data-trim data-noescape>
+            <script type="text/template">
+              import { renderToPipeableStream } from 'react-dom/server';
 
+              // in a nodejs server route handler
+              const { pipe } = renderToPipeableStream(
+                <ReactComponent />,
+                {
+                  bootstrapScripts: ['/main.js'],
+                  onShellReady() {
+                    response.statusCode = didError ? 500 : 200;
+                    response.setHeader('content-type', 'text/html');
+                    pipe(response);
+                  }
+                }
+              );
+            </script>
+          </code>
+        </pre>
+      </section>           
+      <section>
+        <p>The <i>pipe</i> function is critical here.</p>
+        <p>The server does not have to return a static string response.</p>
+        <p>Content can be continuously streamed as its loaded.</p>
+      </section>        
+      <section>
+        <div class="shapes-grid">
+          <div class="shape custom fragment shapes-header"><span>Streaming finished</span></div>
+          <div class="shape custom fragment shapes-content"><span>Streaming finished</span></div>
+          <div class="shape custom fragment shapes-nav"><span>Streaming finished</span></div>
+        </div>
+      </section>      
+      <section>
+        If streaming is not appropriate, we can always wait for all Suspense components to be rendered and return complete HTML file. Good for SEO robots.
+      </section>
+      </div>
     </div>
     <script type="module" src="/main.js"></script>
   </body>
