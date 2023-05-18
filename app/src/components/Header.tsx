@@ -19,6 +19,7 @@ const Header = () => {
             SRR | Module federation POC
           </Title>
           <Link to="/">Current HCC remote module</Link>
+          <Link to="/landing">SSR build HCC module</Link>
           <Link to="/remote">SSR rendered federated module</Link>
           <Link to="/suspense-fetch">Data fetched using the Suspense model</Link>
         </Flex>
