@@ -6,6 +6,15 @@ import App from '../src/App';
 import auth, { getToken, isTokenValid } from '../src/shared/auth';
 import { initialize } from '../src/shared/axiosInstance';
 
+import ReactDOM from 'react-dom';
+
+// ensure react-dom is in shated scope
+function noop(...args: unknown[]) {
+  return args;
+}
+
+noop(ReactDOM);
+
 interface SessionRequest extends Omit<Request, 'session'> {
   session: Record<string, any>;
 }

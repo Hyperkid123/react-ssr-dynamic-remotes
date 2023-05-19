@@ -46,7 +46,6 @@ const RemoteComponentLanding = () => {
     });
     // get the module
     const factory = await container.get<{ default: React.ComponentType }>('./RootApp');
-    console.log({ fs: factory() });
     return factory();
   };
 
