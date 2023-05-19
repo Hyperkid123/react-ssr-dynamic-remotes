@@ -35,11 +35,14 @@
 
 }
 
-.shapes-grid {
+.shapes {
   display: grid;
+  gap: 16px
+}
+
+.shapes.streaming {
   grid-template: "head head" 2em
                  "nav content" 8em / 1fr 4fr;
-  gap: 16px;
 }
 
 .shape.fragment {
@@ -63,26 +66,164 @@
   visibility: visible;
 }
 
-.shapes-grid .shapes-header {
+.shapes.streaming .header {
   grid-area: head;
 }
 
-.shapes-grid .shapes-nav {
+.shapes.streaming .nav {
   grid-area: nav;
 }
 
-.shapes-grid .shapes-content {
+.shapes.streaming .content {
   grid-area: content;
 }
 
-.shapes-grid .shapes-header.visible {
+.shapes.streaming .shape.visible {
   background-color: darkcyan;
 }
 
-.shapes-grid .shapes-nav.visible {
-  background-color: darkcyan;
+.shapes.ssr-flow {
+  gap: 0;
+  grid-template: "start html   html     html     html e ." 1em
+                 "start .      init     .        .    e ."
+                 "start .      populate populate .    e ."                 
+                 "start .      .        .        fv   e jn"
+                 ".     server server server     c    c c"  1em / 30px 1fr 1fr 1fr 1fr 22px 1fr
 }
 
-.shapes-grid .shapes-content.visible {
-  background-color: darkcyan;
+.shapes.ssr-flow .shape.end {
+  grid-area: e;
+  justify-content: flex-start;
+}
+
+.shapes.ssr-flow .shape.init {
+  grid-area: init;
+}
+
+.shapes.ssr-flow .shape.populate {
+  grid-area: populate;
+}
+
+.shapes.ssr-flow .shape.server {
+  grid-area: server;
+  border-color: greenyellow;
+}
+
+.shapes.ssr-flow .shape.client {
+  grid-area: c;
+  border-color: orangered;
+}
+
+.shapes.ssr-flow .shape.first-visible {
+  grid-area: fv;
+}
+
+.shapes.ssr-flow .shape.js-next {
+  grid-area: jn;
+}
+
+/* 
+html
+init
+populate
+first-visible
+js-next
+end
+ */
+
+.shapes.spa-flow {
+  gap: 0;
+  grid-template: "start html . . . . . . . e" 1em
+                 "start . jr . . . . . . e" 
+                 "start . . ma . . . . . e"
+                 "start . . css . . . . . e"
+                 "start . . . eye . . . . e"
+                 "start . . . . a1 . . . e"
+                 "start . . . . . jn . . e"
+                 "start . . . . . . a2 . e"
+                 "start . . . . . . . dom e" 1em / 1em 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1em;
+}
+
+.shapes.spa-flow .shape.fragment.custom, .shapes.ssr-flow .shape.fragment.custom {
+  opacity: 0;
+  border-radius: 0;
+}
+
+.shapes.spa-flow .shape.fragment.custom.visible, .shapes.ssr-flow .shape.fragment.custom.visible {
+  opacity: 1;
+}
+
+.shapes.spa-flow .shape, .shapes.ssr-flow .shape {
+  font-size: 15px;
+  border: none;
+  border-bottom: 8px solid #4287f5;
+}
+
+.shapes.spa-flow .html {
+  grid-area: html;
+}
+
+.shapes.spa-flow .start, .shapes.spa-flow .end, .shapes.ssr-flow .start, .shapes.ssr-flow .end {
+  /* background-color: red; */
+  display: flex;
+  align-items: center;
+  border: none;
+  margin-right: 6px;
+}
+
+.shapes.spa-flow .start, .shapes.ssr-flow .start {
+  grid-area: start;
+  border-right: 5px solid white;
+  writing-mode: tb;
+  text-orientation: upright;
+  justify-content: end;
+}
+
+.shapes.spa-flow .js-root {
+  grid-area: jr;
+}
+
+.shapes.spa-flow .css {
+  grid-area: css;
+}
+
+.shapes.spa-flow .api-1 {
+  grid-area: a1;
+}
+
+.shapes.spa-flow .js-next {
+  grid-area: jn;
+}
+.shapes.spa-flow .end, .shapes.ssr-flow .end {
+  margin-left: 8px;
+  border-left: 5px solid white;
+  writing-mode: tb;
+  text-orientation: upright;
+  justify-content: end;
+}
+
+.shapes.spa-flow .end {
+  grid-area: e;
+}
+
+.shapes.spa-flow .api-2 {
+  grid-area: a2;
+}
+
+.shapes.spa-flow .first-visible {
+  grid-area: eye;
+}
+
+.shapes.spa-flow .dom-done {
+  grid-area: dom;
+}
+
+.shapes.spa-flow .many-js {
+  grid-area: ma;
+}
+
+/* start, html, js-root, css, api-1, js-next, end */
+
+.confused-gif {
+  height: 400px !important;
 }

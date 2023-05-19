@@ -11,6 +11,7 @@
       <div class="slides">
         <section>
           <h1 class="r-fit-text">SSR + HCC = 💘</h1>
+          <small>Part 1</small>
           <h3>Martin Maroši</h3>
         </section>
         <section>
@@ -204,58 +205,195 @@
             </div>
           </div>
         </section>
-      <section>
+        <section>
+          <p>SPA loading flow</p>
+          <div class="shapes spa-flow">
+            <div class="shape start">Session start</div>
+            <div class="shape custom fragment html">Initial HTML request</div>
+            <div class="shape custom fragment js-root">Fetch js root</div>
+            <div class="shape custom fragment many-js">Fetch many nested JS assets</div>
+            <div class="shape custom fragment css">And CSS</div>
+            <div class="shape custom fragment first-visible">👀</div>
+            <div class="shape custom fragment api-1">Initialization (Auth, API...)</div>
+            <div class="shape custom fragment js-next">More JS</div>
+            <div class="shape custom fragment api-2">Populate UI (more API calls)</div>
+            <div class="shape custom fragment dom-done">🤪</div>
+            <div class="shape custom fragment end"></div>            
+          </div>
+        </section>
+        <section>
+          <p>SSR loading flow</p>
+          <div class="shapes ssr-flow">
+            <div class="shape start">Session start</div>
+            <div class="shape custom fragment html">Initial HTML request</div>
+            <div class="shape custom fragment init">Initialization (Auth, API...)</div>
+            <div class="shape custom fragment populate">Populate UI (more API calls)</div>
+            <div class="shape custom fragment server">All of this happens on a server</div>
+            <div class="shape custom fragment first-visible">👀</div>
+            <div class="shape custom fragment end">App ready</div>            
+            <div class="shape custom fragment js-next">More JS</div>
+            <div class="shape custom fragment client">Client runtime</div>
+          </div>
+        </section> 
+        <section>
+          <p>Thats all nice, but why would the SSR flow be faster?</p>
+          <p class="fragment">Because network is slow and unreliable. 🐌</p>
+        </section>
+        <section>
+          <p>Every time a request is made from a browser to a server, we are at mercy of the network gods.</p>
+          <div style="display: flex; justify-content: space-around; align-items: center;">
+            <img height="400px" src="/network.jpg" />
+            <div>
+              <p>The less requests the browser has to make, the faster the app will be.</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <p>But Martin! HCC is not monolith, the server has to make requests too!</p>
+          <p class="fragment">Correct, but our services live on one cluster. They all live on the same network.</p>
+          <p class="fragment">A little demonstration should help!</p>
+        </section>
+
+        <section>
+          <p>OK, but now the user <strong>can stare</strong> on am empty screen longer. They have to wait for the server before its all done.</p>
+          <p class="fragment">Can we avoid that? 🕵️</p>
+        </section>
+        <section>
+          <p>Here comes React 18 and its streamable API.</p>
+          <p>Any component wrapped in &lt;Suspense&gt; can be streamed in partials to the browser.</p>
+        </section>
+        <section>
+          <p>Rendering can look like this</p>
+          <pre style="font-size: 0.51em;" class="jsx">
+            <code data-line-numbers="1|4-5|8,11" data-trim data-noescape>
+              <script type="text/template">
+                import { renderToPipeableStream } from 'react-dom/server';
+
+                // in a nodejs server route handler
+                const { pipe } = renderToPipeableStream(
+                  <ReactComponent />,
+                  {
+                    bootstrapScripts: ['/main.js'],
+                    onShellReady() {
+                      response.statusCode = didError ? 500 : 200;
+                      response.setHeader('content-type', 'text/html');
+                      pipe(response);
+                    }
+                  }
+                );
+              </script>
+            </code>
+          </pre>
+        </section>           
+        <section>
+          <p>The <i>pipe</i> function is critical here.</p>
+          <p>The server does not have to return a static string response.</p>
+          <p>Content can be continuously streamed as its loaded.</p>
+        </section>        
+        <section>        
+          <div class="shapes streaming">
+            <div class="shape custom fragment header"><span>Streaming finished</span></div>
+            <div class="shape custom fragment content"><span>Streaming finished</span></div>
+            <div class="shape custom fragment nav"><span>Streaming finished</span></div>
+          </div>
+        </section>
+        <section>
+          <p>Lets take a look at stream in action.</p>
+        </section>
+        <section>
+          If streaming is not appropriate, we can always wait for all Suspense components to be rendered and return complete HTML file. Good for SEO robots.
+        </section>
+        <section>
           <h2 class="fragment semi-fade-out shrink">Can Micro-Frontends architecture leverage SSR? 🤯</h2>
           <h2 class="fragment current-visible fade-up grow">Yes</h2>
-      </section>
-      <section>
-        <div>
-          <p class="fragment">
-            The main difference is, that simple CDN is not good enough anymore.
-          </p>
-          <p class="fragment">
-            We now need a server. 💾
-          </p>
-        </div>
-      </section>
-      <section>
-        <p>Rendering can look like this</p>
-        <pre style="font-size: 0.51em;" class="jsx">
-          <code data-line-numbers="1|4-5|8,11" data-trim data-noescape>
-            <script type="text/template">
-              import { renderToPipeableStream } from 'react-dom/server';
-
-              // in a nodejs server route handler
-              const { pipe } = renderToPipeableStream(
-                <ReactComponent />,
-                {
-                  bootstrapScripts: ['/main.js'],
-                  onShellReady() {
-                    response.statusCode = didError ? 500 : 200;
-                    response.setHeader('content-type', 'text/html');
-                    pipe(response);
-                  }
-                }
-              );
-            </script>
-          </code>
-        </pre>
-      </section>           
-      <section>
-        <p>The <i>pipe</i> function is critical here.</p>
-        <p>The server does not have to return a static string response.</p>
-        <p>Content can be continuously streamed as its loaded.</p>
-      </section>        
-      <section>
-        <div class="shapes-grid">
-          <div class="shape custom fragment shapes-header"><span>Streaming finished</span></div>
-          <div class="shape custom fragment shapes-content"><span>Streaming finished</span></div>
-          <div class="shape custom fragment shapes-nav"><span>Streaming finished</span></div>
-        </div>
-      </section>      
-      <section>
-        If streaming is not appropriate, we can always wait for all Suspense components to be rendered and return complete HTML file. Good for SEO robots.
-      </section>
+        </section>
+        <section>
+          <div>
+            <p>
+              The main difference between SPA and SSR is, that simple CDN to host the frontend assets is not good enough anymore.
+            </p>
+            <p class="fragment">
+              We now need a server. 💾
+            </p>
+          </div>
+        </section>
+        <section>
+          <p>The other big problem is the runtime environment.</p>
+          <div class="fragment">
+            <p>Browser and Nodejs runtime have some differences. All of our UI modules are build for browser, not server. Fortunately, only Chrome has to be migrated. Other modules can onboard later.</p>
+            <p>🧑‍💻💔🪟</p>
+            <p><small>Now you know why we don't want your app to use the chrome window API.</small></p>
+          </div>
+        </section>
+        <section>
+          <h1>The good 👍</h1>
+        </section>
+        <section>
+          <ul>
+            <li>
+              Improved user experience
+            </li>
+            <li class="fragment">
+              Improved performance*
+            </li>
+            <li class="fragment">
+              Its easier to hide and manage secrets
+            </li>
+            <li class="fragment">
+              We won't be left behind the industry
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h1>The not so good 👎</h1>
+        </section>
+        <section>
+          <ul>
+            <li>
+              Increased complexity
+            </li>
+            <li class="fragment">
+              Extra resources spend on the frontend server
+            </li>
+            <li class="fragment">
+              Performance decrease (WAT?!) *
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h3>How can SSR both increase and decrease the performance?!</h3>
+          <iframe src="https://gifer.com/embed/7VE" width=480 height=466.286 frameBorder="0" allowFullScreen></iframe>
+        </section>
+        <section>
+          <p>Let's change the performance decrease to:</p>
+          <p>"perceived performance decrease"</p>
+        </section>
+        <section>
+          <p>Currently the performance of HCC depends fully on the API.</p>
+          <p>If the platform is slow, its not because of the browser or JS. It is because of the network communication.</p>
+          <p>Sure, we can squeeze some milliseconds by optimizing the JS, but it is just a drop in the ocean.</p>
+        </section>
+        <section>
+          <p>So where does the perceived performance decrease comes from?</p>
+        </section>
+        <section>
+          <p>Currently, our OpenShift cluster is located in the US region.</p>
+          <p class="fragment">But all of our JS assets are distributed on Akamai edge nodes around the whole world.</p>
+          <p class="fragment">It does not matter from where the browser client connects. They receive the assets extremely fast.</p>
+          <p class="fragment">And that means we can show them at least something almost immediately</p>
+        </section>
+        <section>
+          <p>And as 99% of any content is either dynamic, or gated by permissions, we would not gain much by pre-rendering our apps and distributing these static templates to the edge nodes.</p>
+          <p>The only thing we cloud show, is some loader template.</p>
+          <small>And we are doing that today.</small>
+        </section>
+        <section>
+          <p>And that is where we will continue. See if the benefits outweigh the drawbacks.</p>
+        </section>
+        <section>
+          <h1>Q&A</h1>
+          <h4>🙋</h4>
+        </section>
       </div>
     </div>
     <script type="module" src="/main.js"></script>
