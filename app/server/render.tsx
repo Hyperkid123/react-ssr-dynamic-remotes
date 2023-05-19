@@ -22,7 +22,10 @@ interface SessionRequest extends Omit<Request, 'session'> {
 export default async function render(req: SessionRequest, res: Response, _next: NextFunction) {
   const code = req.query.code;
   const redirectURL = `${req.protocol}://${req.hostname}:1337${req.path}`;
-  const cssAssetMap = ['/dist/main.css'];
+  const cssAssetMap = [
+    'https://stage.foo.redhat.com:1337/dist/vendors-node_modules_crypto-browserify_index_js-node_modules_patternfly_patternfly_patternfly-5420f4.css',
+    '/dist/src_bootstrap_tsx-webpack_sharing_consume_default_react-dom_react-dom.css',
+  ];
   const bootstrapScripts = ['/dist/main.js'];
   // NOTE: This should be in the remote module manifest file
   if (req.path.includes('/landing')) {
