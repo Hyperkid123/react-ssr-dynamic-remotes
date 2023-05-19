@@ -6,14 +6,16 @@ import React from 'react';
 import AuthProvider from './shared/AuthProvider';
 import Root from './Routes/Root';
 
-const App = ({ token }: { token?: string }) => {
+const App = ({ token, cssAssetMap }: { token?: string; cssAssetMap: string[] }) => {
   return (
     <AuthProvider token={token}>
       <html>
         <head>
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <link rel="stylesheet" href="/dist/main.css" />
+          {cssAssetMap.map((href, index) => (
+            <link key={index} rel="stylesheet" href={href} />
+          ))}
           <title>SSR base</title>
         </head>
         <body>

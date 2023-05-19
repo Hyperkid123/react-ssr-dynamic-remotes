@@ -13,6 +13,6 @@ if (token) {
 hydrateRoot(
   document,
   <BrowserRouter>
-    <App token={token} />
+    <App cssAssetMap={window.cssAssetMap} token={token} />
   </BrowserRouter>
 );

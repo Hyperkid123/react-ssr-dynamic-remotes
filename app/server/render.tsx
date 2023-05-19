@@ -13,6 +13,19 @@ interface SessionRequest extends Omit<Request, 'session'> {
 export default async function render(req: SessionRequest, res: Response, _next: NextFunction) {
   const code = req.query.code;
   const redirectURL = `${req.protocol}://${req.hostname}:1337${req.path}`;
+  const cssAssetMap = ['/dist/main.css'];
+  const bootstrapScripts = ['/dist/main.js'];
+  // NOTE: This should be in the remote module manifest file
+  if (req.path.includes('/landing')) {
+    cssAssetMap.push(
+      'http://localhost:8005/vendors-node_modules_patternfly_react-core_dist_esm_layouts_Bullseye_Bullseye_js-node_modules-41c52a.css',
+      'http://localhost:8005/src_routes_Landing_js.css'
+    );
+  }
+
+  if (req.path === '/') {
+    cssAssetMap.push('/apps/landing/css/55.89d163199fd2cea68e60.css', '/apps/landing/css/716.25e3e5cf0437f8ba02a3.css');
+  }
 
   if (code) {
     req.session.code = code;
@@ -33,10 +46,12 @@ export default async function render(req: SessionRequest, res: Response, _next: 
   const waitForAll = false;
   const stream = renderToPipeableStream(
     <StaticRouter location={req.url}>
-      <App token={req.session.token} />
+      <App cssAssetMap={cssAssetMap} token={req.session.token} />
     </StaticRouter>,
     {
-      bootstrapScripts: ['/dist/main.js'],
+      bootstrapScripts,
+      bootstrapScriptContent: `window.cssAssetMap = ${JSON.stringify(cssAssetMap)};`,
+
       onShellReady() {
         if (!waitForAll) {
           console.log('Shell ready');
