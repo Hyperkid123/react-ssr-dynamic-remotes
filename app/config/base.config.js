@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { UniversalFederationPlugin } = require('@module-federation/node');
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 
 const getSharedDeps = () => [
   {
@@ -13,6 +14,11 @@ const getSharedDeps = () => [
 ];
 
 const getConfig = (isServer = false) => ({
+  cache: {
+    type: 'filesystem',
+    allowCollectingMemory: true,
+    cacheDirectory: path.resolve(__dirname, '.cache', isServer ? 'server' : 'client'),
+  },
   entry: isServer
     ? {
         serverStart: path.resolve(__dirname, '../server/index.ts'),
@@ -34,7 +40,9 @@ const getConfig = (isServer = false) => ({
   },
   target: isServer ? false : 'web',
   plugins: [
-    new MiniCssExtractPlugin(),
+    new MiniCssExtractPlugin({
+      chunkFilename: '[name].[contenthash].css',
+    }),
     new webpack.DefinePlugin({
       'process.env.IS_SERVER': isServer === true,
     }),
@@ -50,6 +58,28 @@ const getConfig = (isServer = false) => ({
       },
       shared: getSharedDeps(),
     }),
+    ...(isServer
+      ? []
+      : [
+          new WebpackManifestPlugin({
+            fileName: 'asset-manifest.json',
+            filter: (file) => {
+              return file.isInitial || (file.chunk?.runtime && file.name.match(/\.css$/));
+            },
+            generate: (_seed, files, entries) => {
+              const entryChunks = Object.keys(entries);
+              return files
+                .map((file) => {
+                  return {
+                    name: file.name,
+                    path: file.path,
+                    initial: file.isInitial || entryChunks.includes(file?.chunk.runtime),
+                  };
+                })
+                .filter(({ initial }) => initial);
+            },
+          }),
+        ]),
   ],
   module: {
     rules: [

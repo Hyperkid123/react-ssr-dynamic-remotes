@@ -45,11 +45,12 @@ export default (express: any, app: any, root: string) => {
       saveUninitialized: false,
     })
   );
+  const clientDir = path.join(root, 'build', 'client');
 
   // static path where files such as images and js will be served from
-  app.use('/dist', express.static(path.join(root, 'build', 'client')));
+  app.use('/dist', express.static(clientDir));
 
   const renderThunk = require('./server-render').default;
-  const serverRender = renderThunk();
+  const serverRender = renderThunk(clientDir);
   app.get('/*', serverRender);
 };

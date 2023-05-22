@@ -1,4 +1,8 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import React from 'react';
+import path from 'path';
+import fs from 'fs';
+
 import { renderToPipeableStream } from 'react-dom/server';
 import type { NextFunction, Request, Response } from 'express';
 import { StaticRouter } from 'react-router-dom/server';
@@ -19,25 +23,34 @@ interface SessionRequest extends Omit<Request, 'session'> {
   session: Record<string, any>;
 }
 
-export default async function render(req: SessionRequest, res: Response, _next: NextFunction) {
+export default async function render(req: SessionRequest, res: Response, _next: NextFunction, clientDir: string) {
   const code = req.query.code;
   const redirectURL = `${req.protocol}://${req.hostname}:1337${req.path}`;
-  const cssAssetMap = [
-    'https://stage.foo.redhat.com:1337/dist/vendors-node_modules_crypto-browserify_index_js-node_modules_patternfly_patternfly_patternfly-5420f4.css',
-    '/dist/src_bootstrap_tsx-webpack_sharing_consume_default_react-dom_react-dom.css',
-  ];
-  const bootstrapScripts = ['/dist/main.js'];
-  // NOTE: This should be in the remote module manifest file
-  if (req.path.includes('/landing')) {
-    cssAssetMap.push(
-      'http://localhost:8005/vendors-node_modules_patternfly_react-core_dist_esm_layouts_Bullseye_Bullseye_js-node_modules-41c52a.css',
-      'http://localhost:8005/src_routes_Landing_js.css'
-    );
+  let assetManifest: Array<{
+    name: string;
+    path: string;
+  }>;
+  try {
+    assetManifest = JSON.parse(fs.readFileSync(path.join(clientDir, 'asset-manifest.json'), { encoding: 'utf-8' }));
+  } catch (error) {
+    assetManifest = [];
   }
-
-  if (req.path === '/') {
-    cssAssetMap.push('/apps/landing/css/55.89d163199fd2cea68e60.css', '/apps/landing/css/716.25e3e5cf0437f8ba02a3.css');
-  }
+  const cssAssetMap: Array<{
+    id: string;
+    path: string;
+  }> = [];
+  const bootstrapScripts: string[] = [];
+  assetManifest.forEach(({ name, path }) => {
+    if (path.match(/\.js$/)) {
+      bootstrapScripts.push(path);
+    } else if (path.match(/\.css$/)) {
+      cssAssetMap.push({
+        id: name,
+        path,
+      });
+    }
+  });
+  // FIXME: Extends entry point css asset map with data from remote module manifest file
 
   if (code) {
     req.session.code = code;
