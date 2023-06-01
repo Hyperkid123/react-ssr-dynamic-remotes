@@ -112,12 +112,24 @@ const getConfig = (isServer = false) => ({
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js', '...'],
-    fallback: {
-      os: require.resolve('os-browserify/browser'),
-      path: require.resolve('path-browserify'),
-      crypto: require.resolve('crypto-browserify'),
-      stream: require.resolve('stream-browserify'),
+    alias: {
+      '@openshift/dynamic-plugin-sdk': isServer
+        ? path.resolve(__dirname, '../node_modules/@openshift/dynamic-plugin-sdk/dist/index.cjs.js')
+        : path.resolve(__dirname, '../node_modules/@openshift/dynamic-plugin-sdk'),
+      react: path.resolve(__dirname, '../node_modules/react'),
+      'react-dom': path.resolve(__dirname, '../node_modules/react-dom'),
+      ...(isServer && {
+        uuid: path.resolve(__dirname, '../node_modules/uuid/dist/esm-node'),
+      }),
     },
+    fallback: isServer
+      ? {}
+      : {
+          os: require.resolve('os-browserify/browser'),
+          path: require.resolve('path-browserify'),
+          crypto: require.resolve('crypto-browserify'),
+          stream: require.resolve('stream-browserify'),
+        },
   },
 });
 

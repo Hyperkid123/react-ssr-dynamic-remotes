@@ -4,6 +4,7 @@ import { Route, Routes } from 'react-router-dom';
 import RemoteComponent from '../RemoteComponent';
 import HCCRemoteComponent from '../components/HccRemoteComponent';
 import RemoteComponentLanding from '../RemoteComponentLanding';
+import PluginSSRComponent from '../components/PluginSSRComponent';
 const FedModulesList = lazy(() => import('../components/FedModulesList'));
 
 const Root = () => {
@@ -11,6 +12,7 @@ const Root = () => {
     <BaseLayout>
       <Routes>
         <Route path="/remote/*" element={<RemoteComponent />} />
+        <Route path="/sdk/*" element={<PluginSSRComponent />} />
         <Route path="/landing/*" element={<RemoteComponentLanding />} />
         <Route
           path="/suspense-fetch"

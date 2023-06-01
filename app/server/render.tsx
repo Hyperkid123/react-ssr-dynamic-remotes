@@ -69,39 +69,44 @@ export default async function render(req: SessionRequest, res: Response, _next: 
   initialize(req.session.token);
   let didError = false;
   const waitForAll = false;
-  const stream = renderToPipeableStream(
-    <StaticRouter location={req.url}>
-      <App cssAssetMap={cssAssetMap} token={req.session.token} />
-    </StaticRouter>,
-    {
-      bootstrapScripts,
-      bootstrapScriptContent: `window.cssAssetMap = ${JSON.stringify(cssAssetMap)};`,
-
-      onShellReady() {
-        if (!waitForAll) {
-          console.log('Shell ready');
-          res.statusCode = didError ? 500 : 200;
-          res.cookie('poc_auth_code', req.session.token);
-          stream.pipe(res);
-        }
-      },
-      onAllReady() {
-        if (waitForAll) {
-          console.log('All ready');
-          res.statusCode = didError ? 500 : 200;
-          res.cookie('poc_auth_code', req.session.token);
-          res.setHeader('Content-type', 'text/html');
-          stream.pipe(res);
-        }
-      },
-      onShellError() {
-        res.statusCode = 500;
-        res.send(`<h1>An error occurred</h1>`);
-      },
-      onError(err) {
-        didError = true;
-        console.error(err);
-      },
-    }
-  );
+  try {
+    const stream = renderToPipeableStream(
+      <StaticRouter location={req.url}>
+        <App cssAssetMap={cssAssetMap} token={req.session.token} />
+      </StaticRouter>,
+      {
+        bootstrapScripts,
+        bootstrapScriptContent: `window.cssAssetMap = ${JSON.stringify(cssAssetMap)};`,
+        onShellReady() {
+          if (!waitForAll) {
+            console.log('Shell ready');
+            res.statusCode = didError ? 500 : 200;
+            res.cookie('poc_auth_code', req.session.token);
+            stream.pipe(res);
+          }
+        },
+        onAllReady() {
+          if (waitForAll) {
+            console.log('All ready');
+            res.statusCode = didError ? 500 : 200;
+            res.cookie('poc_auth_code', req.session.token);
+            res.setHeader('Content-type', 'text/html');
+            stream.pipe(res);
+          }
+        },
+        onShellError() {
+          res.statusCode = 500;
+          res.send(`<h1>An error occurred</h1>`);
+        },
+        onError(err) {
+          didError = true;
+          console.error(err);
+        },
+      }
+    );
+  } catch (error) {
+    console.error(error);
+    res.statusCode = 500;
+    res.send(`<h1>An error occurred</h1>`);
+  }
 }
